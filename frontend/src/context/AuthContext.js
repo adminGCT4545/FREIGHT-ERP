@@ -1,30 +1,34 @@
+import { api } from '../utils/api'; // Import the API utility
+
 // Authentication Context
 export class AuthProvider {
     constructor() {
+        // Use consistent keys for storage
+        const token = this.getStorageItem('authToken');
+        const user = this.getStorageItem('erpUser', true);
+
         this.state = {
-            user: this.getStorageItem('erp_user', true) || null,
-            role: this.getStorageItem('erp_role') || null,
-            isAuthenticated: !!this.getStorageItem('auth_token'),
-            token: this.getStorageItem('auth_token')
+            user: user || null,
+            role: user ? user.role : null, // Get role from user object if available
+            isAuthenticated: !!token,
+            token: token || null
         };
-        
-        // Check for existing session
-        if (this.state.token) {
-            this.validateToken();
-        }
+
+        // Optional: Add a check here to verify token validity with backend if needed on load
+        // if (this.state.token) { this.verifyTokenWithBackend(); }
     }
-    
+
     // Helper method to safely get items from localStorage
     getStorageItem(key, isJson = false) {
         try {
             const value = localStorage.getItem(key);
             return isJson && value ? JSON.parse(value) : value;
         } catch (error) {
-            console.error(`Error accessing localStorage for key ${key}:`, error);
+            console.error(`Error accessing localStorage for key "${key}":`, error);
             return null;
         }
     }
-    
+
     // Helper method to safely set items in localStorage
     setStorageItem(key, value, isJson = false) {
         try {
@@ -32,53 +36,23 @@ export class AuthProvider {
             localStorage.setItem(key, storageValue);
             return true;
         } catch (error) {
-            console.error(`Error setting localStorage for key ${key}:`, error);
+            console.error(`Error setting localStorage for key "${key}":`, error);
             return false;
         }
     }
-    
+
     // Helper method to safely remove items from localStorage
     removeStorageItem(key) {
         try {
             localStorage.removeItem(key);
             return true;
         } catch (error) {
-            console.error(`Error removing localStorage for key ${key}:`, error);
+            console.error(`Error removing localStorage for key "${key}":`, error);
             return false;
         }
     }
 
-    async validateToken() {
-        try {
-            // Simulate token validation
-            // In production, this would call the backend
-            console.log('Validating token:', this.state.token);
-            
-            // For demo purposes, we'll assume the token is valid if it exists
-            if (!this.state.user) {
-                // Create dummy user data if we only have a token
-                const dummyUser = { 
-                    id: 'user123',
-                    username: 'demo_user',
-                    email: 'demo@example.com'
-                };
-                const role = 'operations';
-                
-                this.setState({ 
-                    user: dummyUser, 
-                    role: role, 
-                    isAuthenticated: true 
-                });
-                
-                // Store in localStorage
-                this.setStorageItem('erp_user', dummyUser, true);
-                this.setStorageItem('erp_role', role);
-            }
-        } catch (error) {
-            console.error('Token validation failed:', error);
-            this.logout();
-        }
-    }
+    // Removed validateToken simulation - rely on login/logout and token presence
 
     setState(newState) {
         this.state = { ...this.state, ...newState };
@@ -99,50 +73,51 @@ export class AuthProvider {
 
     async login(credentials) {
         try {
-            // Simulate login API call
-            console.log('Login attempt:', credentials);
-            
-            // For demo, always succeed with dummy data
-            const dummyUser = { 
-                id: 'user123',
-                username: credentials.username || 'demo_user',
-                email: credentials.email || 'demo@example.com'
-            };
-            const role = credentials.username?.includes('exec') ? 'executive' : 'operations';
-            const token = 'demo_token_' + Math.random().toString(36).substring(2);
-            
-            // Store authentication data
-            this.setStorageItem('auth_token', token);
-            this.setStorageItem('erp_user', dummyUser, true);
-            this.setStorageItem('erp_role', role);
-            
-            this.setState({
-                user: dummyUser,
-                role: role,
-                isAuthenticated: true,
-                token: token
-            });
-            return true;
+            console.log('Login attempt with:', credentials.username);
+            // Call the actual login API endpoint
+            const responseData = await api.post('/api/auth/login', credentials);
+
+            if (responseData && responseData.token && responseData.user) {
+                const { token, user } = responseData;
+
+                // Store authentication data
+                this.setStorageItem('authToken', token);
+                this.setStorageItem('erpUser', user, true); // Store user object
+
+                this.setState({
+                    user: user,
+                    role: user.role, // Get role from user object
+                    isAuthenticated: true,
+                    token: token
+                });
+                console.log('Login successful for user:', user.username);
+                return true; // Indicate success
+            } else {
+                throw new Error('Login failed: Invalid response from server.');
+            }
         } catch (error) {
-            console.error('Login failed:', error);
-            return false;
+            console.error('Login failed:', error.message || error);
+            // Optionally re-throw or handle specific error messages
+            throw error; // Re-throw the error to be caught by the calling component
         }
     }
 
     logout() {
-        this.removeStorageItem('auth_token');
-        this.removeStorageItem('erp_user');
-        this.removeStorageItem('erp_role');
-        
+        console.log('Logging out user:', this.state.user?.username);
+        this.removeStorageItem('authToken');
+        this.removeStorageItem('erpUser');
+        // No need to remove erp_role separately if it's part of erpUser
+
         this.setState({
             user: null,
             role: null,
             isAuthenticated: false,
             token: null
         });
+        // Optionally notify backend about logout if needed
     }
 
-    // Role-based access control
+    // Role-based access control (RBAC)
     hasPermission(requiredRole) {
         if (!this.state.isAuthenticated) return false;
         if (this.state.role === 'admin') return true;
@@ -156,7 +131,7 @@ export class AuthProvider {
 
     // Get current role
     getCurrentRole() {
-        return this.state.role;
+        return this.state.user?.role; // Safely access role from user object
     }
 
     // Check if user is authenticated

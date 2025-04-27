@@ -1,8 +1,17 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+require('dotenv').config(); // Load environment variables early
+const db = require('./config/db'); // Initialize DB connection pool
+
 const app = express();
 const PORT = process.env.PORT || 3004;
+
+// Import Routers
+const procurementRoutes = require('./routes/procurementRoutes');
+const transportRoutes = require('./routes/transportRoutes');
+const authRoutes = require('./routes/authRoutes'); // Import auth routes
+const { protect, authorize } = require('./middleware/authMiddleware'); // Import auth middleware
 
 // Sample Data
 const performanceMetrics = {
@@ -77,13 +86,8 @@ const routeAnalysis = {
   }
 };
 
-// Custom error class
-class APIError extends Error {
-  constructor(message, statusCode) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
+// Import custom error class
+const { APIError } = require('./utils/errors');
 
 // Error handling middleware
 const errorHandler = (err, req, res, next) => {
@@ -138,7 +142,18 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // API Routes
-app.get('/api/metrics/performance', (req, res, next) => {
+
+// Mount Module Routers
+// Public routes (authentication)
+app.use('/api/auth', authRoutes);
+
+// Protected routes
+app.use('/api/procurement', protect, procurementRoutes);
+app.use('/api/transport', protect, transportRoutes);
+
+// Existing Metrics Routes (Protect these as well)
+// Consider refactoring metrics into their own router and applying middleware there
+app.get('/api/metrics/performance', protect, (req, res, next) => {
   try {
     validateResponse(performanceMetrics, 'performance');
     res.status(200).json({
@@ -150,7 +165,7 @@ app.get('/api/metrics/performance', (req, res, next) => {
   }
 });
 
-app.get('/api/metrics/revenue', (req, res, next) => {
+app.get('/api/metrics/revenue', protect, (req, res, next) => {
   try {
     validateResponse(revenueData, 'revenue');
     res.status(200).json({
@@ -162,7 +177,7 @@ app.get('/api/metrics/revenue', (req, res, next) => {
   }
 });
 
-app.get('/api/metrics/routes', (req, res, next) => {
+app.get('/api/metrics/routes', protect, (req, res, next) => {
   try {
     validateResponse(routeAnalysis, 'route');
     res.status(200).json({

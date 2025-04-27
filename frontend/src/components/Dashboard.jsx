@@ -3,9 +3,11 @@ import RevenueChart from './charts/RevenueChart.jsx';
 import PerformanceChart from './charts/PerformanceChart.jsx';
 import RouteAnalysisChart from './charts/RouteAnalysisChart.jsx';
 import { fetchApi } from '../utils/api';
+import ProcurementDashboard from './procurement/ProcurementDashboard.jsx'; // Import Procurement Dashboard
+import TransportDashboard from './transport/TransportDashboard.jsx'; // Import Transport Dashboard
 
 const Dashboard = () => {
-  const [currentView, setCurrentView] = useState('operations');
+  const [currentView, setCurrentView] = useState('operations'); // Default view
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
@@ -54,9 +56,9 @@ const Dashboard = () => {
     loadData();
   }, []);
 
-  // Function to toggle between views
-  const toggleView = () => {
-    setCurrentView(currentView === 'executive' ? 'operations' : 'executive');
+  // Function to set the current view
+  const setView = (viewName) => {
+    setCurrentView(viewName);
   };
 
   const DeliveryStats = () => (
@@ -186,15 +188,36 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <div className="view-toggle">
-        <button 
-          onClick={toggleView} 
-          className="btn btn-outline-primary"
+      <div className="view-navigation mb-4 flex space-x-2">
+        <button
+          onClick={() => setView('executive')}
+          className={`btn ${currentView === 'executive' ? 'btn-primary' : 'btn-outline-primary'}`}
         >
-          Switch to {currentView === 'executive' ? 'Operations' : 'Executive'} View
+          Executive View
+        </button>
+        <button
+          onClick={() => setView('operations')}
+          className={`btn ${currentView === 'operations' ? 'btn-primary' : 'btn-outline-primary'}`}
+        >
+          Operations View
+        </button>
+        <button
+          onClick={() => setView('procurement')}
+          className={`btn ${currentView === 'procurement' ? 'btn-primary' : 'btn-outline-primary'}`}
+        >
+          Procurement View
+        </button>
+        <button
+          onClick={() => setView('transport')}
+          className={`btn ${currentView === 'transport' ? 'btn-primary' : 'btn-outline-primary'}`}
+        >
+          Transport View
         </button>
       </div>
-      {currentView === 'executive' ? <ExecutiveView /> : <OperationsView />}
+      {currentView === 'executive' && <ExecutiveView />}
+      {currentView === 'operations' && <OperationsView />}
+      {currentView === 'procurement' && <ProcurementDashboard />}
+      {currentView === 'transport' && <TransportDashboard />}
     </div>
   );
 };
