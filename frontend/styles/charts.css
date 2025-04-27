@@ -1,0 +1,274 @@
+/* Chart Components Styling */
+
+/* Chart Container */
+.chart-container {
+    background: white;
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+    margin: var(--spacing-md) 0;
+    position: relative;
+    min-height: 280px;
+}
+
+/* Chart Loading State */
+.chart-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+/* Chart Error State */
+.chart-error {
+    padding: var(--spacing-md);
+    border: 1px solid var(--danger-color);
+    border-radius: var(--border-radius-sm);
+    margin: var(--spacing-md) 0;
+}
+
+/* Chart Legend */
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-sm) 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+/* Canvas Container for Chart.js */
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 250px;
+}
+
+/* Delivery Statistics */
+.delivery-stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg) 0;
+}
+
+.stat-card {
+    text-align: center;
+    padding: var(--spacing-md);
+    min-width: 120px;
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: var(--spacing-sm);
+}
+
+.stat-label {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+/* Active Deliveries Table */
+.delivery-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--spacing-md);
+}
+
+.delivery-table th,
+.delivery-table td {
+    padding: var(--spacing-sm);
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.delivery-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.delivery-table tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Performance Metrics */
+.performance-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.metric-card {
+    background: white;
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.metric-value {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: var(--spacing-xs) 0;
+}
+
+.metric-comparison {
+    font-size: 0.9em;
+    color: var(--secondary-color);
+}
+
+.trend-indicator {
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius-sm);
+}
+
+.trend-indicator.up { color: var(--success-color); }
+.trend-indicator.down { color: var(--danger-color); }
+.trend-indicator.stable { color: var(--warning-color); }
+
+/* Route Analysis */
+.route-analysis-content {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: var(--spacing-md);
+}
+
+.routes-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.route-card {
+    background: white;
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-md);
+    border-left: 4px solid;
+    box-shadow: var(--shadow-sm);
+}
+
+.route-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.route-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.metric .label {
+    font-size: 0.8em;
+    color: var(--secondary-color);
+}
+
+.metric .value {
+    font-weight: bold;
+}
+
+.performance-indicator {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9em;
+}
+
+.performance-indicator.high { background-color: var(--success-color); color: white; }
+.performance-indicator.medium { background-color: var(--warning-color); color: white; }
+.performance-indicator.low { background-color: var(--danger-color); color: white; }
+
+/* Top Performers Section */
+.top-performers {
+    grid-column: 1 / -1;
+    margin-top: var(--spacing-md);
+}
+
+.performers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+.performer-card {
+    background: white;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.performer-label {
+    color: var(--secondary-color);
+    font-size: 0.9em;
+}
+
+.performer-value {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .route-analysis-content {
+        grid-template-columns: 1fr;
+    }
+
+    .performers-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .performance-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .delivery-stats {
+        flex-direction: column;
+    }
+    
+    .stat-card {
+        width: 100%;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .delivery-table {
+        font-size: 0.9rem;
+    }
+}
